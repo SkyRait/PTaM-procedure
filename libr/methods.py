@@ -26,6 +26,35 @@ def add(container: Container, transport) -> None:
     container.size += 1
 
 
+def allowed_ship_types() -> list:
+    """
+    This function returns list of the allowed ship types
+    :return: list of allowed ship types
+    """
+    return ["liner", "tug", "tanker", "cruiser", "caravelle"]
+
+
+def create_ship_class(speed, distance, displacement, types):
+    """
+    This function parses data and creates Ship class
+    :param speed: int: speed transport
+    :param distance: int: distance transport
+    :param displacement: int: displacement ship
+    :param types: str: ship type
+    :return: Ship class
+    """
+    successful_parsed_types = []
+    types = types.split("+")
+    for ship_type in types:
+        if ship_type in allowed_ship_types():
+            successful_parsed_types.append(ship_type)
+    if len(successful_parsed_types) == 0:
+        raise ValueError
+
+    return Transport(speed=int(speed), distance=int(distance),
+                     transport_class=Ship(displacement=int(displacement), ship_type=successful_parsed_types))
+
+
 def create_train_class(speed, distance, wagons):
     """
     This function parses data and creates Train class
@@ -96,6 +125,10 @@ def string_conversion(transport) -> str:
     elif type(transport.transport_class) == Plane:
         return f"Type: plane.\t\tSpeed: {transport.speed}.\tDistance: {transport.distance}. \t" + \
                f"Flying_range: {transport.transport_class.flying_range}.\tCapacity: {transport.transport_class.capacity}"
+    elif type(transport.transport_class) == Ship:
+        return f"Type: ship.\t\tSpeed: {transport.speed}.\tDistance: {transport.distance}. \t" + \
+               f"Displacement: {transport.transport_class.displacement}.\t" \
+               f"Ship_type: {', '.join(transport.transport_class.ship_type)}"
 
 
 def read_file(container: Container, file_in: str) -> None:
@@ -132,19 +165,38 @@ def parse_line_and_create_transport_class(line):
         transport = create_train_class(description["speed"], description["distance"], description["wagons"])
 
         return transport
-    if len(line) == 5:
-        description = {
-            "type": line[0].lower(),
-            "speed": int(line[1].lower()),
-            "distance": int(line[2].lower()),
-            "flying_range": int(line[3].lower()),
-            "capacity": int(line[4].lower())
-        }
-        # Parse data for Train
-        transport = create_plane_class(description["speed"], description["distance"], description["flying_range"],
-                                       description["capacity"])
 
-        return transport
+    if len(line) == 5:
+
+        if line[0] == "Ship":
+
+            description = {
+                "type": line[0].lower(),
+                "speed": int(line[1].lower()),
+                "distance": int(line[2].lower()),
+                "displacement": int(line[3].lower()),
+                "ship_type": line[4].lower()
+            }
+            # Parse data for Train
+            transport = create_ship_class(description["speed"], description["distance"], description["displacement"],
+                                          description["ship_type"])
+
+            return transport
+
+        else:
+
+            description = {
+                "type": line[0].lower(),
+                "speed": int(line[1].lower()),
+                "distance": int(line[2].lower()),
+                "flying_range": int(line[3].lower()),
+                "capacity": int(line[4].lower())
+            }
+            # Parse data for Train
+            transport = create_plane_class(description["speed"], description["distance"], description["flying_range"],
+                                           description["capacity"])
+
+            return transport
 
     else:
         raise ValueError

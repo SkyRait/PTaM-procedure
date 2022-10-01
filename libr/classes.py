@@ -5,6 +5,15 @@ MAX_CONTAINER_SIZE = 128
 
 
 @dataclass
+class Ship:
+    """
+        This is class of the Ship
+    """
+    displacement: int
+    ship_type: list
+
+
+@dataclass
 class Plane:
     """
     This is class of the Plane
