@@ -112,6 +112,9 @@ def read_file(container: Container, file_in: str) -> None:
             transport = parse_line_and_create_transport_class(line)
             add(container, transport)
 
+    # sorted
+    sort_by_transit_time(container)
+
 
 def parse_line_and_create_transport_class(line):
     """
@@ -148,3 +151,15 @@ def parse_line_and_create_transport_class(line):
 
     else:
         raise ValueError
+
+
+def sort_by_transit_time(container):
+    for _ in range(container.size):
+        for i in range(container.size - 1):
+            x = container.data[i].distance / container.data[i].speed
+            y = container.data[i + 1].distance / container.data[i + 1].speed
+            if x > y:
+                container.data[i], container.data[i + 1] = container.data[i + 1], container.data[i]
+
+    for i in range(container.size):
+        print(f"Transport:{i} transit time - {container.data[i].distance / container.data[i].speed}")
