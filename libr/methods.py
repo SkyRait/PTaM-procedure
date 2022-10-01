@@ -112,6 +112,32 @@ def read_file(container: Container, file_in: str) -> None:
             transport = parse_line_and_create_transport_class(line)
             add(container, transport)
 
+    print_filtered_data(container)
+
+
+def filter_data(container, transport_class):
+    """
+    Filter transport by given class
+    :param container: container
+    :param transport_class: class of the transport
+    :return: list of transport filtered by given class
+    """
+    return [transport for transport in container.data if type(transport.transport_class) is transport_class]
+
+
+def print_filtered_data(container):
+    """
+    This method prints data filtered by transport class
+    :param container: container
+    :return: None
+    """
+    for transport_class in [Plane]:
+        print(f"\nFilter by {transport_class.__name__}:")
+        filtered_data = filter_data(container, transport_class)
+
+        for transport in filtered_data:
+            print(string_conversion(transport))
+
 
 def parse_line_and_create_transport_class(line):
     """
