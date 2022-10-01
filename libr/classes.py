@@ -28,6 +28,7 @@ class Transport:
     """
     speed: int
     distance: int
+    weight_now: int
     transport_class: dataclass
 
 
