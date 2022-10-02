@@ -34,7 +34,7 @@ def allowed_ship_types() -> list:
     return ["liner", "tug", "tanker", "cruiser", "caravelle"]
 
 
-def create_ship_class(speed, distance, displacement, types):
+def create_ship_class(speed, distance, weight_now, displacement, types):
     """
     This function parses data and creates Ship class
     :param speed: int: speed transport
@@ -51,7 +51,7 @@ def create_ship_class(speed, distance, displacement, types):
     if len(successful_parsed_types) == 0:
         raise ValueError
 
-    return Transport(speed=int(speed), distance=int(distance),
+    return Transport(speed=int(speed), distance=int(distance), weight_now=int(weight_now),
                      transport_class=Ship(displacement=int(displacement), ship_type=successful_parsed_types))
 
 
@@ -127,12 +127,13 @@ def string_conversion(transport) -> str:
                f"Weight_now: {transport.weight_now}.\tWagons: {transport.transport_class.wagons}."
     elif type(transport.transport_class) == Plane:
         return f"Type: plane.\t\tSpeed: {transport.speed}.\tDistance: {transport.distance}. \t" + \
-               f"Weight_now: {transport.weight_now}.\tFlying_range: {transport.transport_class.flying_range}.\t" \
+               f"Weight_now: {transport.weight_now}.\tFlying_range: {transport.transport_class.flying_range}.\t" + \
                f"Capacity: {transport.transport_class.capacity}"
 
     elif type(transport.transport_class) == Ship:
         return f"Type: ship.\t\tSpeed: {transport.speed}.\tDistance: {transport.distance}. \t" + \
-               f"Displacement: {transport.transport_class.displacement}.\t" \
+               f"Weight_now: {transport.weight_now}.\t" + \
+               f"Displacement: {transport.transport_class.displacement}.\t" + \
                f"Ship_type: {', '.join(transport.transport_class.ship_type)}"
 
 
@@ -202,7 +203,7 @@ def parse_line_and_create_transport_class(line):
 
         return transport
 
-    if len(line) == 5:
+    if len(line) == 6:
 
         if line[0] == "Ship":
 
@@ -210,12 +211,13 @@ def parse_line_and_create_transport_class(line):
                 "type": line[0].lower(),
                 "speed": int(line[1].lower()),
                 "distance": int(line[2].lower()),
-                "displacement": int(line[3].lower()),
-                "ship_type": line[4].lower()
+                "weight_now": int(line[3].lower()),
+                "displacement": int(line[4].lower()),
+                "ship_type": line[5].lower()
             }
-            # Parse data for Train
-            transport = create_ship_class(description["speed"], description["distance"], description["displacement"],
-                                          description["ship_type"])
+            # Parse data for Ship
+            transport = create_ship_class(description["speed"], description["distance"], description["weight_now"],
+                                          description["displacement"], description["ship_type"])
 
             return transport
 
@@ -225,29 +227,15 @@ def parse_line_and_create_transport_class(line):
                 "type": line[0].lower(),
                 "speed": int(line[1].lower()),
                 "distance": int(line[2].lower()),
-                "flying_range": int(line[3].lower()),
-                "capacity": int(line[4].lower())
+                "weight_now": int(line[3].lower()),
+                "flying_range": int(line[4].lower()),
+                "capacity": int(line[5].lower())
             }
-            # Parse data for Train
-            transport = create_plane_class(description["speed"], description["distance"], description["flying_range"],
-                                           description["capacity"])
-    if len(line) == 6:
-        description = {
-            "type": line[0].lower(),
-            "speed": int(line[1].lower()),
-            "distance": int(line[2].lower()),
-            "weight_now": int(line[3].lower()),
-            "flying_range": int(line[4].lower()),
-            "capacity": int(line[5].lower())
-        }
-        # Parse data for Plane
-        transport = create_plane_class(description["speed"], description["distance"], description["weight_now"],
-                                       description["flying_range"], description["capacity"])
+            # Parse data for Plane
+            transport = create_plane_class(description["speed"], description["distance"], description["weight_now"],
+                                           description["flying_range"], description["capacity"])
 
-        return transport
-
-    else:
-        raise ValueError
+            return transport
 
 
 def sort_by_transit_time(container):
