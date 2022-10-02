@@ -1,4 +1,4 @@
 Transport count: 3. Transport:
-1: Type: plane.		Speed: 200.	Distance: 100. 	Flying_range: 400.	Capacity: 500
-2: Type: train.		Speed: 350.	Distance: 350. 	Wagons: 1.
-3: Type: train.		Speed: 350.	Distance: 350. 	Wagons: 1.
+1: Type: train.		Speed: 350.	Distance: 350. 	Weight_now: 2.	Wagons: 1.
+2: Type: plane.		Speed: 200.	Distance: 200. 	Weight_now: 2.	Flying_range: 400.	Capacity: 500
+3: Type: train.		Speed: 350.	Distance: 350. 	Weight_now: 2.	Wagons: 1.
