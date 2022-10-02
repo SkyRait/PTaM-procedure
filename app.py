@@ -1,3 +1,4 @@
+import sys
 import os
 from libr import methods
 from sys import argv
@@ -13,6 +14,11 @@ def run(args: list) -> None:
     """
 
     file_in, file_out = args[1:]
+
+    if len(args) != 3:
+        print("Incorrect command line. Waited: app.py input_file.txt output_file.txt")
+        sys.exit()
+
     container = methods.create_container()
 
     # Running methods
