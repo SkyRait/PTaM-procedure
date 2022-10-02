@@ -1,3 +1,4 @@
+import sys
 from libr.classes import *
 
 
@@ -144,17 +145,30 @@ def read_file(container: Container, file_in: str) -> None:
     :param file_in: path to the file
     :return: None
     """
+    errors_count = 0
+    try:
+        with open(file_in) as file:
+            lines = file.readlines()
+            for line in lines:
+                try:
+                    transport = parse_line_and_create_transport_class(line)
+                    add(container, transport)
+                except ValueError:
+                    errors_count += 1
+                except BufferError:
+                    print(f"! Warning: Container is full. Read only {container.max_size} lines.")
+                    break
 
-    with open(file_in) as file:
-        lines = file.readlines()
-        for line in lines:
-            transport = parse_line_and_create_transport_class(line)
-            add(container, transport)
+        # sorted
+        sort_by_transit_time(container)
 
-    # sorted
-    sort_by_transit_time(container)
+        print_filtered_data(container)
 
-    print_filtered_data(container)
+    except FileNotFoundError:
+        print("Incorrect command line: No such input file.")
+        sys.exit()
+
+    print(f"Input file read with {errors_count} errors.")
 
 
 def filter_data(container, transport_class):
@@ -190,22 +204,25 @@ def parse_line_and_create_transport_class(line):
     line = line.replace("\n", "").split()
 
     if len(line) == 5:
-        description = {
-            "type": line[0].lower(),
-            "speed": int(line[1].lower()),
-            "distance": int(line[2].lower()),
-            "weight_now": int(line[3].lower()),
-            "wagons": int(line[4].lower())
-        }
-        # Parse data for Train
-        transport = create_train_class(description["speed"], description["distance"], description["weight_now"],
-                                       description["wagons"])
+        if line[0].lower() == "train":
+            description = {
+                "type": line[0].lower(),
+                "speed": int(line[1].lower()),
+                "distance": int(line[2].lower()),
+                "weight_now": int(line[3].lower()),
+                "wagons": int(line[4].lower())
+            }
+            # Parse data for Train
+            transport = create_train_class(description["speed"], description["distance"], description["weight_now"],
+                                           description["wagons"])
 
-        return transport
+            return transport
+        else:
+            raise ValueError
 
-    if len(line) == 6:
+    elif len(line) == 6:
 
-        if line[0] == "Ship":
+        if line[0].lower() == "ship":
 
             description = {
                 "type": line[0].lower(),
@@ -221,7 +238,7 @@ def parse_line_and_create_transport_class(line):
 
             return transport
 
-        else:
+        elif line[0].lower() == "plane":
 
             description = {
                 "type": line[0].lower(),
@@ -236,6 +253,12 @@ def parse_line_and_create_transport_class(line):
                                            description["flying_range"], description["capacity"])
 
             return transport
+
+        else:
+            raise ValueError
+
+    else:
+        raise ValueError
 
 
 def sort_by_transit_time(container):

@@ -1,4 +1,4 @@
-Train 350 350 2 1
+Train 350 350 2 6
 Plane 200 200 2 400 500
 Train 350 350 2 1
-Ship 200 100 10 100 liner+tug
+ship 200 100 10 100 liner+tug
